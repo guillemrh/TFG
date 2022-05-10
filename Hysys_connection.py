@@ -20,7 +20,7 @@ def Aspen_connection(File_name, Spreadsheet_name, Unit_operation_name,
      Unit_operation_name: Tuple -- Unit operation name in the Aspen HYSYS 
                          file including quoting.
      hy_visible: Integer -- 1 for Visible, 0 for No Visible
-     active: Integer -- 1 for Active, 0 for No Active
+     active: Integer -- 1 for Active, 0 for No Active (If HYSYS file is opened when executing these scripts, it should be set to 1, else it should be set to 0)
      
     OUTPUTS
      Hysys: Class -- It is a class that collects all the important information
