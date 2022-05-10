@@ -15,55 +15,16 @@ import matplotlib.pyplot as plt
 import time
 
 # 1.0 Data of the Aspen HYSYS file
-File         = 'Test_1.hsc'
-Spreadsheets = ('SS_Flash', 'SS_turbine', 'SS_Distillation')
-Units        = ('Cooler', 'Flash Drum', 'Heater', 'Valve', 'Reactor', 
-                'Distillation Column', 'Turbine', 'Pump')
+File         = 'PE.hsc'
+Spreadsheets = ('SS_Compressors', 'SS_HeatExchangers', 'SS_Valves', 'SS_Columns')
+Units        = ('HX1', 'HX2', 'HX3', 'HX4', 'HX5',
+                'K1', 'K2', 'K3',
+                'T1', 'T2', 'T3', 'T4', 'T5',
+                'V1', 'V2', 'V3', 'V4')
 
 # 2.0 Perform connection
 Test_1      = Aspen_connection(File, Spreadsheets, Units)
-Turbine     = Test_1.SS['SS_turbine']
-Efficiency  = Turbine.Cell(1,0)            # .Cell(Column,Row) starting from 0
-Generation  = Turbine.Cell(1,1)
-ori_eff     = Efficiency.CellValue
-solver      = Test_1.Solver
-
-print('Original Turbine efficiency: ', ori_eff)
-
-# 3.0 CONVERGENCE TIME PROBLEM
-points = 10
-eff = np.zeros(points);     gen = np.zeros(points)
-fig, axs = plt.subplots(1, 2)
-
-## 3.1 Not waiting for solver to stop
-for i in range(points):
-    eff[i] = Efficiency.CellValue
-    gen[i] = Generation.CellValue
-    Efficiency.CellValue = eff[i] + 1
-### 3.11 Plot
-axs[0].plot(eff, gen, 'ro')
-axs[0].set_xlabel('Turbine Efficiency'); axs[0].set_ylabel('Energy Generation [kJ/s]')
-axs[0].set_title('Not waiting Solver')
-
-## 3.2 Come back to original
-eff = np.zeros(points); gen = np.zeros(points); Efficiency.CellValue = ori_eff
-
-## 3.3 Waiting for solver to stop
-for i in range(points):
-    eff[i]               = Efficiency.CellValue
-    gen[i]               = Generation.CellValue
-    solver.CanSolve      = False                  # Turn off the solving mode
-    Efficiency.CellValue = eff[i] + 1
-    solver.CanSolve      = True                   # Turn on the solving mode
-    while solver.IsSolving == True:
-        time.sleep(0.001)
-    
-    
-### 3.31 Plot
-axs[1].plot(eff, gen, 'ro')
-axs[1].set_xlabel('Turbine Efficiency'); axs[0].set_ylabel('Energy Generation [kJ/s]')
-axs[1].set_title('Waiting solver')
-plt.tight_layout()
-
-# Return to original
-Efficiency.CellValue = ori_eff
+Compressors     = Test_1.SS['SS_Compressors']
+Input_pressure_K1  = Compressors.Cell(0,1)            # .Cell(Column,Row) starting from 0
+Output_pressure_K1  = Compressors.Cell(1,1)
+ori_press     = Input_pressure_K1.CellValue
