@@ -22,6 +22,8 @@ Units        = ('HX1', 'HX2', 'HX3', 'HX4', 'HX5',
 # 2.0 Perform connection
 Test_1      = Aspen_connection(File, Spreadsheets, Units)
 Compressors     = Test_1.SS['SS_Compressors']
-Input_pressure_K1  = Compressors.Cell(0,1)            # .Cell(Column,Row) starting from 0
+Input_pressure_K1  = Compressors.Cell(0,1)      #Object: Cell(Column,Row) starting from 0,0
 Output_pressure_K1  = Compressors.Cell(1,1)
-ori_press     = Input_pressure_K1.CellValue
+ori_press     = Input_pressure_K1.CellValue     #Value of the defined object
+
+print(ori_press)
