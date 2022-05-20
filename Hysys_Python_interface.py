@@ -134,7 +134,7 @@ class UnisimConnection(object):
         # References to BackDoor Variables
         #PropPkgBd = self.BackDoor(self.simcase)
         #PropPkgBd.SendBackDoorMessage('"FlowSht.1/UnitOpObject.400(A-BCD)/FlowSht.600" "Run"')
-        self.uniapp.PlayScript(r'G:\arnau\RunColumnPython.scp')
+        self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\RunColumnPython.scp')
         'This sleep is jut to let the optimizer calculate, it can be checked also with a While loop'
         #time.sleep(5) 
         return True
@@ -152,8 +152,8 @@ class UnisimConnection(object):
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
 Inputs = ['NT_T1', 'RR_T1', 'D_T1']
-UP  = [20, 3 , 6150]
-LOW = [5, 0.3,5000]
+UP  = [18, 3 , 3]
+LOW = [16, 0.3,1]
 
 n = 30     #Number of samples that are required
 d = len(UP)   #Number of inputs that are required
@@ -192,13 +192,13 @@ q= sorted(sorted(sorted(q,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x:
 #q
 #%% Sample the data points
 
-filepath   =r'G:\arnau\Simulations\Column_A-BCD.hsc'  # Ubicació de la simulació a mapejar
-unisimpath =r'C:\Program Files\AspenTech\Aspen HYSYS V11.0\hysys.tlb'  # Ubicació de la instal·lació de HYSYS 
+filepath   =r'C:\Users\vdi.eebe\Desktop\TFG-main\PE.hsc'  # Ubicació de la simulació a mapejar
+unisimpath =r'C:\Program Files\AspenTech\Aspen HYSYS V12.0\hysys.tlb'  # Ubicació de la instal·lació de HYSYS 
 
 obj = UnisimConnection(filepath,unisimpath)
 obj.OpenCase()
 #%%
-TableDict, Values = obj.ReadDataTable('ProcData3')
+TableDict, Values = obj.ReadDataTable('ProcData1')
 #%%
 from datetime import datetime
 start_time = datetime.now()
@@ -206,11 +206,11 @@ start_time = datetime.now()
 Results = []
 Counter = 0
 for x in q:
-    obj.WriteTagsDataTable(TableDict,x,'ProcData3')     #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
+    obj.WriteTagsDataTable(TableDict,x,'ProcData1')     #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
     obj.Run()
     #obj.Calculate()
     #obj.Run()
-    Result, Values = obj.ReadDataTable('ProcData3')
+    Result, Values = obj.ReadDataTable('ProcData1')
     Results.append(Values)
     Counter = Counter + 1
     print(Counter)
@@ -249,4 +249,4 @@ Results=pd.DataFrame(Results)
 Results.columns = tags
 #o = win32com.client.Dispatch("Excel.Application")
 #o.Visible = 1   
-Results.to_excel(r'G:\arnau\Sampling\Book1.xlsx')
+Results.to_excel(r'C:\Users\vdi.eebe\Desktop\TFG-main\Book1.xlsx')
