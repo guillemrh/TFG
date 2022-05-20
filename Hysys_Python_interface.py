@@ -148,36 +148,14 @@ class UnisimConnection(object):
         time.sleep(7) 
         return True
 
-"""
-    def WriteSingleTag(self,TableDict,Tag,Value):
-        '''Write a single tag to process datatable'''
-        # Write all the values back to the ProcessDataTable 
-        #ProcessDataTable.StartTransfer()
-        for iDataTable in TableDict:
-            tempDict = TableDict[iDataTable]
-            if Tag in tempDict:
-                vd = self.VarDefinition(tempDict[Tag])
-                if vd.accessMode == 3 or vd.accessMode == 2:
-                    vd.Variable.SetValue(Value, vd.Units)    
-        #ProcessDataTable.EndTransfer()
-    
-def mergeDict(dict1, dict2):
-   ''' Merge dictionaries and keep values of common keys in list'''
-   dict3 = {**dict1, **dict2}
-   for key, value in dict3.items():
-       if key in dict1 and key in dict2:
-               dict3[key] = [value , dict1[key]]
-   return dict3
-""" 
-
 #%% Create the sampling points.
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
-Inputs = ['NT', 'RR', 'Distillate_Rate']
+Inputs = ['NT_T1', 'RR_T1', 'D_T1']
 UP  = [20, 3 , 6150]
 LOW = [5, 0.3,5000]
 
-n = 10000     #Number of samples that are required
+n = 30     #Number of samples that are required
 d = len(UP)   #Number of inputs that are required
 
 #The array "p" is normalized between 0-1.

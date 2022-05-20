@@ -9,7 +9,7 @@ Date:   05/01/2020
 This is a test file for the Aspen HYSYS - Python connection using a flowsheet 
 with multiple units.
 '''
-from Hysys_connection import Aspen_connection
+from Read_Spreadsheets.Hysys_connection import Aspen_connection
 
 # 1.0 Data of the Aspen HYSYS file
 File         = 'PE.hsc'
