@@ -151,9 +151,9 @@ class UnisimConnection(object):
 #%% Create the sampling points.
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
-Inputs = ['NT_T1', 'RR_T1', 'D_T1']
-UP  = [18, 3 , 3]
-LOW = [16, 0.3,1]
+Inputs = ['NT_T1', 'D_T1', 'RR_T1']
+UP  = [19, 3 , 3]
+LOW = [10, 1,0.1]
 
 n = 30     #Number of samples that are required
 d = len(UP)   #Number of inputs that are required
@@ -208,8 +208,6 @@ Counter = 0
 for x in q:
     obj.WriteTagsDataTable(TableDict,x,'ProcData1')     #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
     obj.Run()
-    #obj.Calculate()
-    #obj.Run()
     Result, Values = obj.ReadDataTable('ProcData1')
     Results.append(Values)
     Counter = Counter + 1
