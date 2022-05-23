@@ -162,7 +162,7 @@ class UnisimConnection(object):
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
 Inputs = ['NT_T1', 'D_T1', 'RR_T1']
-UP  = [19, 3 , 3]
+UP  = [19, 2.5 , 5]
 LOW = [10, 1,0.1]
 
 n = 30     #Number of samples that are required
