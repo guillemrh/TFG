@@ -129,6 +129,16 @@ class UnisimConnection(object):
         ProcessDataTable.EndTransfer()
         #except:
             #print("Error writing tags")
+    def Reset(self): 
+        ''' Runs the Unisim simulation from a script previously defined'''
+        # References to BackDoor Variables
+        #PropPkgBd = self.BackDoor(self.simcase)
+        #PropPkgBd.SendBackDoorMessage('"FlowSht.1/UnitOpObject.400(A-BCD)/FlowSht.600" "Run"')
+        self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\ResetColumnPython.scp')
+        'This sleep is jut to let the optimizer calculate, it can be checked also with a While loop'
+        #time.sleep(5) 
+        return True
+
     def Run(self): 
         ''' Runs the Unisim simulation from a script previously defined'''
         # References to BackDoor Variables
@@ -206,7 +216,8 @@ start_time = datetime.now()
 Results = []
 Counter = 0
 for x in q:
-    obj.WriteTagsDataTable(TableDict,x,'ProcData1')     #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
+    obj.WriteTagsDataTable(TableDict,x,'ProcData1')
+    obj.Reset()     #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
     obj.Run()
     Result, Values = obj.ReadDataTable('ProcData1')
     Results.append(Values)
