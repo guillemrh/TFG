@@ -34,7 +34,7 @@ def latin_hypercube_sampling(LOW,UP,p,d):
 
 ### Functions to create the interface ###
 
-#%% Pip install
+
 #pip install cognite-sdk
 #%% Imports
 import numpy as np
@@ -131,12 +131,7 @@ class UnisimConnection(object):
             #print("Error writing tags")
     def Reset(self): 
         ''' Runs the Unisim simulation from a script previously defined'''
-        # References to BackDoor Variables
-        #PropPkgBd = self.BackDoor(self.simcase)
-        #PropPkgBd.SendBackDoorMessage('"FlowSht.1/UnitOpObject.400(A-BCD)/FlowSht.600" "Run"')
         self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\ResetColumnPython.scp')
-        'This sleep is jut to let the optimizer calculate, it can be checked also with a While loop'
-        #time.sleep(5) 
         return True
 
     def Run(self): 
@@ -162,10 +157,10 @@ class UnisimConnection(object):
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
 Inputs = ['NT_T1', 'D_T1', 'RR_T1']
-UP  = [16, 180 , 5]
-LOW = [10, 50,2]
+UP  = [20, 150 , 5]
+LOW = [10, 50, 0.2]
 
-n = 30     #Number of samples that are required
+n = 1000     #Number of samples that are required
 d = len(UP)   #Number of inputs that are required
 
 #The array "p" is normalized between 0-1.
@@ -219,11 +214,17 @@ for x in q:
     obj.WriteTagsDataTable(TableDict,x,'ProcData1')
     obj.Reset()     #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
     obj.Run()
+    #if Values == None: #Check if the first column has converged, if it has not, reset and run a new example.
+    #    obj.Reset()
+     #   obj.Run()
+    #else:
     Result, Values = obj.ReadDataTable('ProcData1')
     Results.append(Values)
     Counter = Counter + 1
     print(Counter)
+    print(Results[Counter, 4])
 end_time = datetime.now()
+
 #%% Proves
 import csv 
   
