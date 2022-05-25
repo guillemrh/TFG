@@ -157,8 +157,8 @@ class UnisimConnection(object):
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
 Inputs = ['NT_T1', 'D_T1', 'RR_T1']
-UP  = [20, 150 , 5]
-LOW = [10, 50, 0.2]
+UP  = [22, 150 , 5]
+LOW = [10, 40, 0.1]
 
 n = 1000     #Number of samples that are required
 d = len(UP)   #Number of inputs that are required
@@ -210,9 +210,10 @@ start_time = datetime.now()
 
 Results = []
 Counter = 0
+NaNs = 0
 for x in q:
     obj.WriteTagsDataTable(TableDict,x,'ProcData1')
-    obj.Reset()     #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
+    #obj.Reset()     #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
     obj.Run()
     #if Values == None: #Check if the first column has converged, if it has not, reset and run a new example.
     #    obj.Reset()
@@ -221,10 +222,12 @@ for x in q:
     Result, Values = obj.ReadDataTable('ProcData1')
     Results.append(Values)
     Counter = Counter + 1
+    if Values[4] == -32767.0:
+        NaNs += 1
     print(Counter)
-    print(Results[Counter, 4])
+    print(NaNs)
 end_time = datetime.now()
-
+print(NaNs)
 #%% Proves
 import csv 
   
