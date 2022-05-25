@@ -157,8 +157,8 @@ class UnisimConnection(object):
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
 Inputs = ['NT_T1', 'D_T1', 'RR_T1']
-UP  = [22, 150 , 5]
-LOW = [10, 40, 0.1]
+UP  = [22, 180 , 1]
+LOW = [10, 40, 0.01]
 
 n = 1000     #Number of samples that are required
 d = len(UP)   #Number of inputs that are required
@@ -223,6 +223,7 @@ for x in q:
     Results.append(Values)
     Counter = Counter + 1
     if Values[4] == -32767.0:
+        obj.Reset() #Fem reset quan no ha convergit
         NaNs += 1
     print(Counter)
     print(NaNs)
