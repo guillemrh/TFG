@@ -129,17 +129,31 @@ class UnisimConnection(object):
         ProcessDataTable.EndTransfer()
         #except:
             #print("Error writing tags")
-    def Reset(self): 
+    def Reset_Col4(self): 
         ''' Runs the Unisim simulation from a script previously defined'''
-        self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\ResetColumnPython.scp')
+        self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\ResetColumn4Python.scp')
+        return True
+    def Reset_Col5(self): 
+        ''' Runs the Unisim simulation from a script previously defined'''
+        self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\ResetColumn5Python.scp')
         return True
 
-    def Run(self): 
+    def Run_Col4(self): 
         ''' Runs the Unisim simulation from a script previously defined'''
         # References to BackDoor Variables
         #PropPkgBd = self.BackDoor(self.simcase)
         #PropPkgBd.SendBackDoorMessage('"FlowSht.1/UnitOpObject.400(A-BCD)/FlowSht.600" "Run"')
-        self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\RunColumnPython.scp')
+        self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\RunColumn4Python.scp')
+        'This sleep is jut to let the optimizer calculate, it can be checked also with a While loop'
+        #time.sleep(5) 
+        return True    
+
+    def Run_Col5(self): 
+        ''' Runs the Unisim simulation from a script previously defined'''
+        # References to BackDoor Variables
+        #PropPkgBd = self.BackDoor(self.simcase)
+        #PropPkgBd.SendBackDoorMessage('"FlowSht.1/UnitOpObject.400(A-BCD)/FlowSht.600" "Run"')
+        self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\RunColumn5Python.scp')
         'This sleep is jut to let the optimizer calculate, it can be checked also with a While loop'
         #time.sleep(5) 
         return True
@@ -156,9 +170,9 @@ class UnisimConnection(object):
 #%% Create the sampling points.
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
-Inputs = ['NT_T1', 'D_T1', 'RR_T1']
-UP  = [18, 130 , 1.5]
-LOW = [10, 70, 1]
+Inputs = ['NT_T4', 'D_T4', 'RR_T4', 'NT_T5', 'D_T5', 'RR_T5']
+UP  = [31, 190, 2.5, 18, 130 , 1.5]
+LOW = [23, 120, 1.5, 10, 70, 1]
 
 n = 1000     #Number of samples that are required
 d = len(UP)   #Number of inputs that are required
@@ -197,7 +211,7 @@ q= sorted(sorted(sorted(q,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x:
 #q
 #%% Sample the data points
 
-filepath   =r'C:\Users\vdi.eebe\Desktop\TFG-main\PE.hsc'  # Ubicació de la simulació a mapejar
+filepath   =r'C:\Users\vdi.eebe\Desktop\TFG-main\PE2.hsc'  # Ubicació de la simulació a mapejar
 unisimpath =r'C:\Program Files\AspenTech\Aspen HYSYS V12.0\hysys.tlb'  # Ubicació de la instal·lació de HYSYS 
 
 obj = UnisimConnection(filepath,unisimpath)
@@ -214,16 +228,18 @@ NaNs = 0
 for x in q:
     obj.WriteTagsDataTable(TableDict,x,'ProcData1')
     #obj.Reset()     #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
-    obj.Run()
-    #if Values == None: #Check if the first column has converged, if it has not, reset and run a new example.
-    #    obj.Reset()
-     #   obj.Run()
-    #else:
-    Result, Values = obj.ReadDataTable('ProcData1')
+    obj.Run_Col4()
+    Results[:,10], Values = obj.ReadDataTable('ProcData1')
     Results.append(Values)
+    if Values[9] != -32767.0:
+        obj.Run_Col5() 
+    else: 
+        NaNs += 1
+        obj.Reset_Col4()
+        x += 1  
     Counter = Counter + 1
-    if Values[4] == -32767.0:
-        obj.Reset() #Fem reset quan no ha convergit
+    if Values[14] == -32767.0:
+        obj.Reset_Col4() #Fem reset quan no ha convergit
         NaNs += 1
     print(Counter)
     print(NaNs)
