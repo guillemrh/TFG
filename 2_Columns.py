@@ -207,7 +207,7 @@ for i in np.arange(LOW[y], UP[y], 1/n*(UP[y]-LOW[y])):
 plt.show()
 
 #%%
-q= sorted(sorted(sorted(q,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
+q= sorted(sorted(sorted(sorted(sorted(sorted(q,key=lambda x: x[5]),key=lambda x: x[1]),key=lambda x: -x[4]),key=lambda x: -x[2]),key=lambda x: -x[3]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
 #sorted(q, key=lambda x: -x[0])
 #q
 #%% Sample the data points
