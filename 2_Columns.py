@@ -24,10 +24,10 @@ def latin_hypercube_normalized(d,n):
   return points
 
 
-def latin_hypercube_sampling_Col4(LOW_Col4,UP_Col4,p,d):
+def latin_hypercube_sampling(LOW,UP,p,d):
   "Values from upper to lower limits"
   for i in range(0,d):
-    p[:,i]=p[:,i]*(UP_Col4[i]-LOW_Col4[i])+LOW_Col4[i]
+    p[:,i]=p[:,i]*(UP[i]-LOW[i])+LOW[i]
   return p
 
 '''
@@ -176,26 +176,30 @@ class UnisimConnection(object):
 #%% Create the sampling points.
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
-Inputs_Col4 = ['NT_T4', 'D_T4', 'RR_T4']
-UPCOL4  = [31, 190, 2.5]
-LOWCOL4 = [23, 120, 1.5]
+Inputs_Col4 = ['NT_T4', 'D_T4', 'RR_T4', 'NT_T5', 'D_T5', 'RR_T5']
+UP  = [31, 190, 2.5,18, 130 , 1.5]
+LOW = [23, 120, 1.5, 10, 70, 1]
+#UPCOL4  = [31, 190, 2.5]
+#LOWCOL4 = [23, 120, 1.5]
 
 Inputs_Col5 = ['NT_T5', 'D_T5', 'RR_T5']
-UPCOL5  = [18, 130 , 1.5]
-LOWCOL5 = [10, 70, 1]
+#UPCOL5  = [18, 130 , 1.5]
+#LOWCOL5 = [10, 70, 1]
 
 n = 1000     #Number of samples that are required
-d = len(UPCOL4)   #Number of inputs that are required
+d = len(UP)   #Number of inputs that are required
 
 #The array "p" is normalized between 0-1.
 p = latin_hypercube_normalized(d,n)
 
+q = latin_hypercube_sampling(LOW,UP,p,d)
+q[:,0]=q[:,0].astype(int)
 #The array "q" is not normalized. These are the sampling points. 
-q_Col4 = latin_hypercube_sampling_Col4(LOWCOL4,UPCOL4,p,d)
-q_Col4[:,0]=q_Col4[:,0].astype(int)                       #Always keep the first input as NT (number of trays), as it must be a natural number (int).
+#q_Col4 = latin_hypercube_sampling_Col4(LOWCOL4,UPCOL4,p,d)
+#q_Col4[:,0]=q_Col4[:,0].astype(int)                       #Always keep the first input as NT (number of trays), as it must be a natural number (int).
 
-q_Col5 = latin_hypercube_sampling_Col4(LOWCOL5,UPCOL5,p,d)
-q_Col5[:,0]=q_Col5[:,0].astype(int)     
+#q_Col5 = latin_hypercube_sampling_Col4(LOWCOL5,UPCOL5,p,d)
+#q_Col5[:,0]=q_Col5[:,0].astype(int)     
 #%% Plot the sampling points to check everything is random
 x=2
 y=1
@@ -233,10 +237,10 @@ for i in np.arange(LOW_Col5[y], UP_Col5[y], 1/n*(UP_Col5[y]-LOW_Col5[y])):
 plt.show()
 '''
 #%%
-q_Col4 = sorted(sorted(sorted(q_Col4,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
-q_Col5 = sorted(sorted(sorted(q_Col5,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0]) 
+q[:2] = sorted(sorted(sorted(q,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
+q[2:5]= sorted(sorted(sorted(q,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0]) 
 #%% Sample the data points
-q = np.concatenate((q_Col4, q_Col5), axis=1)
+#q = np.concatenate((q_Col4, q_Col5), axis=1)
 
 filepath   =r'C:\Users\vdi.eebe\Desktop\TFG-main\PE2.hsc'  # Ubicació de la simulació a mapejar
 unisimpath =r'C:\Program Files\AspenTech\Aspen HYSYS V12.0\hysys.tlb'  # Ubicació de la instal·lació de HYSYS 
