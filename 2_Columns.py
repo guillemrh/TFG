@@ -25,12 +25,18 @@ def latin_hypercube_normalized(d,n):
   return points
 
 
-def latin_hypercube_sampling(LOW,UP,p,d):
+def latin_hypercube_sampling_Col4(LOW_Col4,UP_Col4,p_Col4,d):
   "Values from upper to lower limits"
   for i in range(0,d):
-    p[:,i]=p[:,i]*(UP[i]-LOW[i])+LOW[i]
-  return p
+    p_Col4[:,i]=p_Col4[:,i]*(UP_Col4[i]-LOW_Col4[i])+LOW_Col4[i]
+  return p_Col4
 
+
+def latin_hypercube_sampling_Col5(LOW_Col5,UP_Col5,p_Col5,d):
+  "Values from upper to lower limits"
+  for i in range(0,d):
+    p_Col5[:,i]=p_Col5[:,i]*(UP_Col5[i]-LOW_Col5[i])+LOW_Col5[i]
+  return p_Col5
 
 
 ### Functions to create the interface ###
@@ -186,10 +192,10 @@ d = len(UP_Col4)   #Number of inputs that are required
 p = latin_hypercube_normalized(d,n)
 
 #The array "q" is not normalized. These are the sampling points. 
-q_Col4 = latin_hypercube_sampling(LOW_Col4,UP_Col4,p,d)
+q_Col4 = latin_hypercube_sampling_Col4(LOW_Col4,UP_Col4,p,d)
 q_Col4[:,0]=q_Col4[:,0].astype(int)                       #Always keep the first input as NT (number of trays), as it must be a natural number (int).
 
-q_Col5 = latin_hypercube_sampling(LOW_Col5,UP_Col5,p,d)
+q_Col5 = latin_hypercube_sampling_Col5(LOW_Col5,UP_Col5,p,d)
 q_Col5[:,0]=q_Col5[:,0].astype(int)     
 #%% Plot the sampling points to check everything is random
 x=2
