@@ -7,7 +7,6 @@ Finally, the connection is created and samples are simulated. The results are ev
 ### Functions to create the Sampling ###
 
 #%% Define the Latin Hypercube Sampling functions
-from turtle import goto
 import numpy as np
 import matplotlib.pyplot as plt
 import array
@@ -25,19 +24,19 @@ def latin_hypercube_normalized(d,n):
   return points
 
 
-def latin_hypercube_sampling_Col4(LOW_Col4,UP_Col4,p_Col4,d):
+def latin_hypercube_sampling_Col4(LOW_Col4,UP_Col4,p,d):
   "Values from upper to lower limits"
   for i in range(0,d):
-    p_Col4[:,i]=p_Col4[:,i]*(UP_Col4[i]-LOW_Col4[i])+LOW_Col4[i]
-  return p_Col4
+    p[:,i]=p[:,i]*(UP_Col4[i]-LOW_Col4[i])+LOW_Col4[i]
+  return p
 
-
+'''
 def latin_hypercube_sampling_Col5(LOW_Col5,UP_Col5,p_Col5,d):
   "Values from upper to lower limits"
   for i in range(0,d):
     p_Col5[:,i]=p_Col5[:,i]*(UP_Col5[i]-LOW_Col5[i])+LOW_Col5[i]
   return p_Col5
-
+'''
 
 ### Functions to create the interface ###
 
@@ -178,36 +177,36 @@ class UnisimConnection(object):
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
 Inputs_Col4 = ['NT_T4', 'D_T4', 'RR_T4']
-UP_Col4  = [31, 190, 2.5, 18, 130 , 1.5]
-LOW_Col4 = [23, 120, 1.5, 10, 70, 1]
+UPCOL4  = [31, 190, 2.5]
+LOWCOL4 = [23, 120, 1.5]
 
 Inputs_Col5 = ['NT_T5', 'D_T5', 'RR_T5']
-UP_Col5  = [18, 130 , 1.5]
-LOW_Col5 = [10, 70, 1]
+UPCOL5  = [18, 130 , 1.5]
+LOWCOL5 = [10, 70, 1]
 
 n = 1000     #Number of samples that are required
-d = len(UP_Col4)   #Number of inputs that are required
+d = len(UPCOL4)   #Number of inputs that are required
 
 #The array "p" is normalized between 0-1.
 p = latin_hypercube_normalized(d,n)
 
 #The array "q" is not normalized. These are the sampling points. 
-q_Col4 = latin_hypercube_sampling_Col4(LOW_Col4,UP_Col4,p,d)
+q_Col4 = latin_hypercube_sampling_Col4(LOWCOL4,UPCOL4,p,d)
 q_Col4[:,0]=q_Col4[:,0].astype(int)                       #Always keep the first input as NT (number of trays), as it must be a natural number (int).
 
-q_Col5 = latin_hypercube_sampling_Col5(LOW_Col5,UP_Col5,p,d)
+q_Col5 = latin_hypercube_sampling_Col4(LOWCOL5,UPCOL5,p,d)
 q_Col5[:,0]=q_Col5[:,0].astype(int)     
 #%% Plot the sampling points to check everything is random
 x=2
 y=1
-
-#Figure
+'''
+#Figure Col 4
 plt.figure(figsize=[10,10])
 plt.xlim([LOW_Col4[x],UP_Col4[x]])
 plt.ylim([LOW_Col4[y],UP_Col4[y]])
 plt.xlabel(Inputs_Col4[x])
 plt.ylabel(Inputs_Col4[y])
-plt.scatter(q[:,x], q[:,y], c='r', s=10)
+plt.scatter(q_Col4[:,x], q_Col4[:,y], c='r', s=10)
 
 #Create the grid so the position of the points is the one desired (just one point per column and row).
 for i in np.arange(LOW_Col4[x], UP_Col4[x], 1/n*(UP_Col4[x]-LOW_Col4[x])):
@@ -217,11 +216,27 @@ for i in np.arange(LOW_Col4[y], UP_Col4[y], 1/n*(UP_Col4[y]-LOW_Col4[y])):
 
 plt.show()
 
+#Figure Col 5
+plt.figure(figsize=[10,10])
+plt.xlim([LOW_Col5[x],UP_Col5[x]])
+plt.ylim([LOW_Col5[y],UP_Col5[y]])
+plt.xlabel(Inputs_Col5[x])
+plt.ylabel(Inputs_Col5[y])
+plt.scatter(q_Col5[:,x], q_Col5[:,y], c='r', s=10)
+
+#Create the grid so the position of the points is the one desired (just one point per column and row).
+for i in np.arange(LOW_Col5[x], UP_Col5[x], 1/n*(UP_Col5[x]-LOW_Col5[x])):
+  plt.axvline(i, linewidth=0.01)
+for i in np.arange(LOW_Col5[y], UP_Col5[y], 1/n*(UP_Col5[y]-LOW_Col5[y])):
+  plt.axhline(i, linewidth=0.01)
+
+plt.show()
+'''
 #%%
 q_Col4 = sorted(sorted(sorted(q_Col4,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
 q_Col5 = sorted(sorted(sorted(q_Col5,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0]) 
 #%% Sample the data points
-q = q_Col5 + q_Col4
+q = np.concatenate((q_Col4, q_Col5), axis=1)
 
 filepath   =r'C:\Users\vdi.eebe\Desktop\TFG-main\PE2.hsc'  # Ubicació de la simulació a mapejar
 unisimpath =r'C:\Program Files\AspenTech\Aspen HYSYS V12.0\hysys.tlb'  # Ubicació de la instal·lació de HYSYS 
@@ -238,7 +253,7 @@ Results = []
 Counter = 0
 NaNs = 0
 for x in q:
-    obj.WriteTagsDataTable(TableDict_Col,x[:,2],'ProcData1') #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
+    obj.WriteTagsDataTable(TableDict_Col,x,'ProcData1') #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
     obj.Run_Col4()
     Counter = Counter + 1
     Result, Values_Col = obj.ReadDataTable('ProcData1')
@@ -246,7 +261,6 @@ for x in q:
         obj.Reset_Col4()
         NaNs += 1
     elif Values_Col[len(Inputs_Col4)] != -32767.0:
-        obj.WriteTagsDataTable(TableDict_Col,x[:,2:5],'ProcData1')
         obj.Run_Col5()
         Result, Values_Col = obj.ReadDataTable('ProcData1')
         Results.append(Values_Col)
