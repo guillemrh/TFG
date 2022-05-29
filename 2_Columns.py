@@ -226,23 +226,24 @@ Results = []
 Counter = 0
 NaNs = 0
 for x in q:
-    obj.WriteTagsDataTable(TableDict,x,'ProcData1')
-    #obj.Reset()     #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
+    obj.WriteTagsDataTable(TableDict,x,'ProcData1') #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
     obj.Run_Col4()
-    Results[:,10], Values = obj.ReadDataTable('ProcData1')
-    Results.append(Values)
-    if Values[9] != -32767.0:
-        obj.Run_Col5() 
+    Counter = Counter + 1
+    Result, Values = obj.ReadDataTable('ProcData1')
+    if Values[6] != -32767.0 and Values[1] >= Values[4]: #If the previous column converges and mass conservation law is followed, run next column
+        obj.Run_Col5()
+        Result, Values = obj.ReadDataTable('ProcData1')
+        Results.append(Values) 
     else: 
         NaNs += 1
         obj.Reset_Col4()
-        x += 1  
-    Counter = Counter + 1
+        obj.Reset_Col5()
+        continue  
     if Values[14] == -32767.0:
         obj.Reset_Col4() #Fem reset quan no ha convergit
         NaNs += 1
-    print(Counter)
-    print(NaNs)
+    print('Iteration:', Counter)
+    print('Unconverged examples', NaNs)
 end_time = datetime.now()
 print(NaNs)
 #%% Proves
