@@ -7,6 +7,7 @@ Finally, the connection is created and samples are simulated. The results are ev
 ### Functions to create the Sampling ###
 
 #%% Define the Latin Hypercube Sampling functions
+from turtle import goto
 import numpy as np
 import matplotlib.pyplot as plt
 import array
@@ -170,47 +171,51 @@ class UnisimConnection(object):
 #%% Create the sampling points.
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
-Inputs = ['NT_T4', 'D_T4', 'RR_T4', 'NT_T5', 'D_T5', 'RR_T5']
-UP  = [31, 190, 2.5, 18, 130 , 1.5]
-LOW = [23, 120, 1.5, 10, 70, 1]
+Inputs_Col4 = ['NT_T4', 'D_T4', 'RR_T4']
+UP_Col4  = [31, 190, 2.5, 18, 130 , 1.5]
+LOW_Col4 = [23, 120, 1.5, 10, 70, 1]
+
+Inputs_Col5 = ['NT_T5', 'D_T5', 'RR_T5']
+UP_Col5  = [18, 130 , 1.5]
+LOW_Col5 = [10, 70, 1]
 
 n = 1000     #Number of samples that are required
-d = len(UP)   #Number of inputs that are required
+d = len(UP_Col4)   #Number of inputs that are required
 
 #The array "p" is normalized between 0-1.
 p = latin_hypercube_normalized(d,n)
 
 #The array "q" is not normalized. These are the sampling points. 
-q = latin_hypercube_sampling(LOW,UP,p,d)
-q[:,0]=q[:,0].astype(int)
-q[:,3]=q[:,3].astype(int)                           #Always keep the first input as NT (number of trays), as it must be a natural number (int).
-#q[:,1:]=np.around(q[:,1:],4)                         # We want the other variables to have 4 decimals, as this is the length in HYSYS variables.
-#q=np.around(q,4)                                     # We want all the other variables to have 4 decimals, as this is the length in HYSYS variables.
+q_Col4 = latin_hypercube_sampling(LOW_Col4,UP_Col4,p,d)
+q_Col4[:,0]=q_Col4[:,0].astype(int)                       #Always keep the first input as NT (number of trays), as it must be a natural number (int).
+
+q_Col5 = latin_hypercube_sampling(LOW_Col5,UP_Col5,p,d)
+q_Col5[:,0]=q_Col5[:,0].astype(int)     
 #%% Plot the sampling points to check everything is random
 x=2
 y=1
 
 #Figure
 plt.figure(figsize=[10,10])
-plt.xlim([LOW[x],UP[x]])
-plt.ylim([LOW[y],UP[y]])
-plt.xlabel(Inputs[x])
-plt.ylabel(Inputs[y])
+plt.xlim([LOW_Col4[x],UP_Col4[x]])
+plt.ylim([LOW_Col4[y],UP_Col4[y]])
+plt.xlabel(Inputs_Col4[x])
+plt.ylabel(Inputs_Col4[y])
 plt.scatter(q[:,x], q[:,y], c='r', s=10)
 
 #Create the grid so the position of the points is the one desired (just one point per column and row).
-for i in np.arange(LOW[x], UP[x], 1/n*(UP[x]-LOW[x])):
+for i in np.arange(LOW_Col4[x], UP_Col4[x], 1/n*(UP_Col4[x]-LOW_Col4[x])):
   plt.axvline(i, linewidth=0.01)
-for i in np.arange(LOW[y], UP[y], 1/n*(UP[y]-LOW[y])):
+for i in np.arange(LOW_Col4[y], UP_Col4[y], 1/n*(UP_Col4[y]-LOW_Col4[y])):
   plt.axhline(i, linewidth=0.01)
 
 plt.show()
 
 #%%
-q= sorted(sorted(sorted(sorted(sorted(sorted(q,key=lambda x: x[5]),key=lambda x: x[1]),key=lambda x: -x[4]),key=lambda x: -x[2]),key=lambda x: -x[3]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
-#sorted(q, key=lambda x: -x[0])
-#q
+q_Col4 = sorted(sorted(sorted(q_Col4,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
+q_Col5 = sorted(sorted(sorted(q_Col5,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0]) 
 #%% Sample the data points
+q = q_Col5 + q_Col4
 
 filepath   =r'C:\Users\vdi.eebe\Desktop\TFG-main\PE2.hsc'  # Ubicació de la simulació a mapejar
 unisimpath =r'C:\Program Files\AspenTech\Aspen HYSYS V12.0\hysys.tlb'  # Ubicació de la instal·lació de HYSYS 
@@ -218,7 +223,7 @@ unisimpath =r'C:\Program Files\AspenTech\Aspen HYSYS V12.0\hysys.tlb'  # Ubicaci
 obj = UnisimConnection(filepath,unisimpath)
 obj.OpenCase()
 #%%
-TableDict, Values = obj.ReadDataTable('ProcData1')
+TableDict_Col, Values_Col = obj.ReadDataTable('ProcData1')
 #%%
 from datetime import datetime
 start_time = datetime.now()
@@ -227,22 +232,22 @@ Results = []
 Counter = 0
 NaNs = 0
 for x in q:
-    obj.WriteTagsDataTable(TableDict,x,'ProcData1') #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
+    obj.WriteTagsDataTable(TableDict_Col,x[:,2],'ProcData1') #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
     obj.Run_Col4()
     Counter = Counter + 1
-    Result, Values = obj.ReadDataTable('ProcData1')
-    if Values[6] != -32767.0 and Values[1] >= Values[4]: #If the previous column converges and mass conservation law is followed, run next column
-        obj.Run_Col5()
-        Result, Values = obj.ReadDataTable('ProcData1')
-        Results.append(Values) 
-    else: 
-        NaNs += 1
+    Result, Values_Col = obj.ReadDataTable('ProcData1')
+    if Values_Col[len(Inputs_Col4)] == -32767.0: #If the previous column converges and mass conservation law is followed, run next column
         obj.Reset_Col4()
-        obj.Reset_Col5()
-        continue  
-    if Values[14] == -32767.0:
-        obj.Reset_Col4() #Fem reset quan no ha convergit
         NaNs += 1
+    elif Values_Col[len(Inputs_Col4)] != -32767.0:
+        obj.WriteTagsDataTable(TableDict_Col,x[:,2:5],'ProcData1')
+        obj.Run_Col5()
+        Result, Values_Col = obj.ReadDataTable('ProcData1')
+        Results.append(Values_Col)
+    elif Values_Col[17] == -32767.0:
+        obj.Reset_Col5()
+        NaNs += 1
+
     print('Iteration:', Counter)
     print('Unconverged examples', NaNs)
 end_time = datetime.now()
