@@ -181,18 +181,14 @@ UP  = [31, 190, 2.5,18, 130 , 1.5]
 LOW = [23, 120, 1.5, 10, 70, 1]
 
 
-n = 1000     #Number of samples that are required
+n = 10     #Number of samples that are required
 d = len(UP)   #Number of inputs that are required
 
 #The array "p" is normalized between 0-1.
 p = latin_hypercube_normalized(d,n)
 
 q = latin_hypercube_sampling(LOW,UP,p,d)
-for three in q:
-    three_1 = three*3
-    q[:,three_1]=q[:,three_1].astype(int)
-
-#q[:,0]=q[:,0].astype(int)
+q[:,0]=q[:,0].astype(int)
 q[:,3]=q[:,3].astype(int)
 
 #%% Plot the sampling points to check everything is random
@@ -218,27 +214,14 @@ plt.show()
 
 
 #%%
-col_dict = {}
-for tres, count in enumerate(q):
-    tres_1 = 3*tres
-    tres_2 = tres_1 + 3
-    col_dict["q" %count] = q[:,tres_1:tres_2]
-    col_dict[count] = sorted(sorted(sorted(col_dict[count],key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])
 
-q = col_dict['q1']
-if len(col_dict) >= 3:
-    for concatenat in len(col_dict)-1:
-        q = np.concatenate((q, col_dict[concatenat+1]), axis = 1)
-else:
-    for concatenat in len(col_dict)-2:
-        q = np.concatenate((col_dict[concatenat+1], col_dict[concatenat+2]), axis = 1)
 
-#q1 = q[:,:3]
-#q2 = q[:,3:6]
-#q1 = sorted(sorted(sorted(q1,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
-#q2= sorted(sorted(sorted(q2,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0]) 
+q1 = q[:,:3]
+q2 = q[:,3:6]
+q1 = sorted(sorted(sorted(q1,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
+q2= sorted(sorted(sorted(q2,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0]) 
 #%% Sample the data points
-#q = np.concatenate((q1, q2), axis=1)
+q = np.concatenate((q1, q2), axis=1)
 
 filepath   =r'C:\Users\vdi.eebe\Desktop\TFG-main\PE2.hsc'  # Ubicació de la simulació a mapejar
 unisimpath =r'C:\Program Files\AspenTech\Aspen HYSYS V12.0\hysys.tlb'  # Ubicació de la instal·lació de HYSYS 
