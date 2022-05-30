@@ -176,15 +176,10 @@ class UnisimConnection(object):
 #%% Create the sampling points.
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
-Inputs_Col4 = ['NT_T4', 'D_T4', 'RR_T4', 'NT_T5', 'D_T5', 'RR_T5']
+Inputs = ['NT_T4', 'D_T4', 'RR_T4', 'NT_T5', 'D_T5', 'RR_T5']
 UP  = [31, 190, 2.5,18, 130 , 1.5]
 LOW = [23, 120, 1.5, 10, 70, 1]
-#UPCOL4  = [31, 190, 2.5]
-#LOWCOL4 = [23, 120, 1.5]
 
-Inputs_Col5 = ['NT_T5', 'D_T5', 'RR_T5']
-#UPCOL5  = [18, 130 , 1.5]
-#LOWCOL5 = [10, 70, 1]
 
 n = 1000     #Number of samples that are required
 d = len(UP)   #Number of inputs that are required
@@ -193,54 +188,57 @@ d = len(UP)   #Number of inputs that are required
 p = latin_hypercube_normalized(d,n)
 
 q = latin_hypercube_sampling(LOW,UP,p,d)
-q[:,0]=q[:,0].astype(int)
-#The array "q" is not normalized. These are the sampling points. 
-#q_Col4 = latin_hypercube_sampling_Col4(LOWCOL4,UPCOL4,p,d)
-#q_Col4[:,0]=q_Col4[:,0].astype(int)                       #Always keep the first input as NT (number of trays), as it must be a natural number (int).
+for three in q:
+    three_1 = three*3
+    q[:,three_1]=q[:,three_1].astype(int)
 
-#q_Col5 = latin_hypercube_sampling_Col4(LOWCOL5,UPCOL5,p,d)
-#q_Col5[:,0]=q_Col5[:,0].astype(int)     
+#q[:,0]=q[:,0].astype(int)
+q[:,3]=q[:,3].astype(int)
+
 #%% Plot the sampling points to check everything is random
 x=2
 y=1
-'''
-#Figure Col 4
+
+#Figure
 plt.figure(figsize=[10,10])
-plt.xlim([LOW_Col4[x],UP_Col4[x]])
-plt.ylim([LOW_Col4[y],UP_Col4[y]])
-plt.xlabel(Inputs_Col4[x])
-plt.ylabel(Inputs_Col4[y])
-plt.scatter(q_Col4[:,x], q_Col4[:,y], c='r', s=10)
+plt.xlim([LOW[x],UP[x]])
+plt.ylim([LOW[y],UP[y]])
+plt.xlabel(Inputs[x])
+plt.ylabel(Inputs[y])
+plt.scatter(q[:,x], q[:,y], c='r', s=10)
 
 #Create the grid so the position of the points is the one desired (just one point per column and row).
-for i in np.arange(LOW_Col4[x], UP_Col4[x], 1/n*(UP_Col4[x]-LOW_Col4[x])):
+for i in np.arange(LOW[x], UP[x], 1/n*(UP[x]-LOW[x])):
   plt.axvline(i, linewidth=0.01)
-for i in np.arange(LOW_Col4[y], UP_Col4[y], 1/n*(UP_Col4[y]-LOW_Col4[y])):
+for i in np.arange(LOW[y], UP[y], 1/n*(UP[y]-LOW[y])):
   plt.axhline(i, linewidth=0.01)
 
 plt.show()
 
-#Figure Col 5
-plt.figure(figsize=[10,10])
-plt.xlim([LOW_Col5[x],UP_Col5[x]])
-plt.ylim([LOW_Col5[y],UP_Col5[y]])
-plt.xlabel(Inputs_Col5[x])
-plt.ylabel(Inputs_Col5[y])
-plt.scatter(q_Col5[:,x], q_Col5[:,y], c='r', s=10)
 
-#Create the grid so the position of the points is the one desired (just one point per column and row).
-for i in np.arange(LOW_Col5[x], UP_Col5[x], 1/n*(UP_Col5[x]-LOW_Col5[x])):
-  plt.axvline(i, linewidth=0.01)
-for i in np.arange(LOW_Col5[y], UP_Col5[y], 1/n*(UP_Col5[y]-LOW_Col5[y])):
-  plt.axhline(i, linewidth=0.01)
 
-plt.show()
-'''
 #%%
-q[:2] = sorted(sorted(sorted(q,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
-q[2:5]= sorted(sorted(sorted(q,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0]) 
+col_dict = {}
+for tres, count in enumerate(q):
+    tres_1 = 3*tres
+    tres_2 = tres_1 + 3
+    col_dict["q" %count] = q[:,tres_1:tres_2]
+    col_dict[count] = sorted(sorted(sorted(col_dict[count],key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])
+
+q = col_dict['q1']
+if len(col_dict) >= 3:
+    for concatenat in len(col_dict)-1:
+        q = np.concatenate((q, col_dict[concatenat+1]), axis = 1)
+else:
+    for concatenat in len(col_dict)-2:
+        q = np.concatenate((col_dict[concatenat+1], col_dict[concatenat+2]), axis = 1)
+
+#q1 = q[:,:3]
+#q2 = q[:,3:6]
+#q1 = sorted(sorted(sorted(q1,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
+#q2= sorted(sorted(sorted(q2,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0]) 
 #%% Sample the data points
-#q = np.concatenate((q_Col4, q_Col5), axis=1)
+#q = np.concatenate((q1, q2), axis=1)
 
 filepath   =r'C:\Users\vdi.eebe\Desktop\TFG-main\PE2.hsc'  # Ubicació de la simulació a mapejar
 unisimpath =r'C:\Program Files\AspenTech\Aspen HYSYS V12.0\hysys.tlb'  # Ubicació de la instal·lació de HYSYS 
@@ -261,10 +259,10 @@ for x in q:
     obj.Run_Col4()
     Counter = Counter + 1
     Result, Values_Col = obj.ReadDataTable('ProcData1')
-    if Values_Col[len(Inputs_Col4)] == -32767.0: #If the previous column converges and mass conservation law is followed, run next column
+    if Values_Col[len(Inputs)] == -32767.0: #If the previous column converges and mass conservation law is followed, run next column
         obj.Reset_Col4()
         NaNs += 1
-    elif Values_Col[len(Inputs_Col4)] != -32767.0:
+    elif Values_Col[len(Inputs)] != -32767.0:
         obj.Run_Col5()
         Result, Values_Col = obj.ReadDataTable('ProcData1')
         Results.append(Values_Col)
