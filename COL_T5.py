@@ -30,13 +30,7 @@ def latin_hypercube_sampling(LOW,UP,p,d):
     p[:,i]=p[:,i]*(UP[i]-LOW[i])+LOW[i]
   return p
 
-'''
-def latin_hypercube_sampling_Col5(LOW_Col5,UP_Col5,p_Col5,d):
-  "Values from upper to lower limits"
-  for i in range(0,d):
-    p_Col5[:,i]=p_Col5[:,i]*(UP_Col5[i]-LOW_Col5[i])+LOW_Col5[i]
-  return p_Col5
-'''
+
 
 ### Functions to create the interface ###
 
@@ -135,26 +129,17 @@ class UnisimConnection(object):
         ProcessDataTable.EndTransfer()
         #except:
             #print("Error writing tags")
-    def Reset_Col4(self): 
-        ''' Runs the Unisim simulation from a script previously defined'''
-        self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\ResetColumn4Python.scp')
-        return True
-    def Reset_Col5(self): 
+    def Reset(self): 
         ''' Runs the Unisim simulation from a script previously defined'''
         self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\ResetColumn5Python.scp')
         return True
 
-    def Run_Col4(self): 
+    def OkComp(self): 
         ''' Runs the Unisim simulation from a script previously defined'''
-        # References to BackDoor Variables
-        #PropPkgBd = self.BackDoor(self.simcase)
-        #PropPkgBd.SendBackDoorMessage('"FlowSht.1/UnitOpObject.400(A-BCD)/FlowSht.600" "Run"')
-        self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\RunColumn4Python.scp')
-        'This sleep is jut to let the optimizer calculate, it can be checked also with a While loop'
-        #time.sleep(5) 
-        return True    
+        self.uniapp.PlayScript(r'C:\Users\vdi.eebe\Desktop\TFG-main\OkCompT5.scp')
+        return True
 
-    def Run_Col5(self): 
+    def Run(self): 
         ''' Runs the Unisim simulation from a script previously defined'''
         # References to BackDoor Variables
         #PropPkgBd = self.BackDoor(self.simcase)
@@ -176,26 +161,21 @@ class UnisimConnection(object):
 #%% Create the sampling points.
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
-Inputs = ['NT_T4', 'D_T4', 'RR_T4', 'NT_T5', 'D_T5', 'RR_T5']
-UP  = [31, 190, 2.5,18, 130 , 1.5]
-LOW = [23, 120, 1.5, 10, 70, 1]
+Inputs = ['NT_T5', 'D_T5', 'RR_T5', 'M_INPUT_T5', 'X_BUTENE_INPUT', 'X_CYCLOPENTANE_INPUT']
+UP  = [18, 130 , 1.5, 240, 0.75, 0.23]
+LOW = [10, 70, 1, 180, 0.52, 0.17]
 
-
-n = 1000     #Number of samples that are required
+n = 10000    #Number of samples that are required
 d = len(UP)   #Number of inputs that are required
 
 #The array "p" is normalized between 0-1.
 p = latin_hypercube_normalized(d,n)
 
+#The array "q" is not normalized. These are the sampling points. 
 q = latin_hypercube_sampling(LOW,UP,p,d)
-Num_cols = 2
-for three in range(0,Num_cols):
-    three_1 = three*3
-    q[:,three_1]=q[:,three_1].astype(int)
-
-#q[:,0]=q[:,0].astype(int)
-q[:,3]=q[:,3].astype(int)
-
+q[:,0]=q[:,0].astype(int)                           #Always keep the first input as NT (number of trays), as it must be a natural number (int).
+#q[:,1:]=np.around(q[:,1:],4)                         # We want the other variables to have 4 decimals, as this is the length in HYSYS variables.
+#q=np.around(q,4)                                     # We want all the other variables to have 4 decimals, as this is the length in HYSYS variables.
 #%% Plot the sampling points to check everything is random
 x=2
 y=1
@@ -216,38 +196,19 @@ for i in np.arange(LOW[y], UP[y], 1/n*(UP[y]-LOW[y])):
 
 plt.show()
 
-
-
 #%%
-col_dict = {}
-for tres in range(0,Num_cols-1):
-    tres_1 = 3*tres
-    tres_2 = tres_1 + 3
-    col_dict["q" + str(tres)] = q[:,tres_1:tres_2]
-    col_dict[tres] = sorted(sorted(sorted(col_dict[tres],key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])
-
-q = col_dict['q1']
-if len(col_dict) >= 3:
-    for concatenat in len(col_dict)-1:
-        q = np.concatenate((q, col_dict[concatenat+1]), axis = 1)
-else:
-    for concatenat in len(col_dict)-2:
-        q = np.concatenate((col_dict[concatenat+1], col_dict[concatenat+2]), axis = 1)
-
-#q1 = q[:,:3]
-#q2 = q[:,3:6]
-#q1 = sorted(sorted(sorted(q1,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
-#q2= sorted(sorted(sorted(q2,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0]) 
+q= sorted(sorted(sorted(q,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda x: -x[0])   #Though the sample is random, the points are ordenated to reduce HYSYS hysteresis
+#sorted(q, key=lambda x: -x[0])
+#q
 #%% Sample the data points
-#q = np.concatenate((q1, q2), axis=1)
 
-filepath   =r'C:\Users\vdi.eebe\Desktop\TFG-main\PE2.hsc'  # Ubicació de la simulació a mapejar
+filepath   =r'C:\Users\vdi.eebe\Desktop\TFG-main\COL_T5.hsc'  # Ubicació de la simulació a mapejar
 unisimpath =r'C:\Program Files\AspenTech\Aspen HYSYS V12.0\hysys.tlb'  # Ubicació de la instal·lació de HYSYS 
 
 obj = UnisimConnection(filepath,unisimpath)
 obj.OpenCase()
 #%%
-TableDict_Col, Values_Col = obj.ReadDataTable('ProcData1')
+TableDict, Values = obj.ReadDataTable('ProcData1')
 #%%
 from datetime import datetime
 start_time = datetime.now()
@@ -256,23 +217,22 @@ Results = []
 Counter = 0
 NaNs = 0
 for x in q:
-    obj.WriteTagsDataTable(TableDict_Col,x,'ProcData1') #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
-    obj.Run_Col4()
+    obj.WriteTagsDataTable(TableDict,x,'ProcData1')
+    obj.OkComp()
+    #obj.Reset()     #El tamany de q ha de ser igual als Write i Read/Writes del DataTable
+    obj.Run()
+    #if Values == None: #Check if the first column has converged, if it has not, reset and run a new example.
+    #    obj.Reset()
+     #   obj.Run()
+    #else:
+    Result, Values = obj.ReadDataTable('ProcData1')
+    Results.append(Values)
     Counter = Counter + 1
-    Result, Values_Col = obj.ReadDataTable('ProcData1')
-    if Values_Col[len(Inputs)] == -32767.0: #If the previous column converges and mass conservation law is followed, run next column
-        obj.Reset_Col4()
+    if Values[4] == -32767.0:
+        obj.Reset() #Fem reset quan no ha convergit
         NaNs += 1
-    elif Values_Col[len(Inputs)] != -32767.0:
-        obj.Run_Col5()
-        Result, Values_Col = obj.ReadDataTable('ProcData1')
-        Results.append(Values_Col)
-    elif Values_Col[17] == -32767.0:
-        obj.Reset_Col5()
-        NaNs += 1
-
-    print('Iteration:', Counter)
-    print('Unconverged examples', NaNs)
+    print(Counter)
+    print(NaNs)
 end_time = datetime.now()
 print(NaNs)
 #%% Proves
