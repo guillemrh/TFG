@@ -161,9 +161,9 @@ class UnisimConnection(object):
 #%% Create the sampling points.
 #Define the upper and lower intervals for each variable. Remember that each position "i" in vectors LOW and UP matches each variable "i" in array p.
 #Model 1
-Inputs = ['NT_T5', 'D_T5', 'RR_T5', 'M_INPUT_T5', 'X_BUTENE_INPUT', 'X_CYCLOPENTANE_INPUT']
-UP  = [18, 130 , 1.5, 240, 0.75, 0.23]
-LOW = [10, 70, 1, 180, 0.52, 0.17]
+Inputs = ['NT_T5', 'D_T5', 'RR_T5', 'M_INPUT_T5', 'X_BUTENE_INPUT']
+UP  = [18, 130 , 1.5, 240, 0.75]
+LOW = [10, 70, 1, 180, 0.52]
 
 n = 10000    #Number of samples that are required
 d = len(UP)   #Number of inputs that are required
@@ -172,8 +172,10 @@ d = len(UP)   #Number of inputs that are required
 p = latin_hypercube_normalized(d,n)
 
 #The array "q" is not normalized. These are the sampling points. 
-q = latin_hypercube_sampling(LOW,UP,p,d)
-q[:,0]=q[:,0].astype(int)                           #Always keep the first input as NT (number of trays), as it must be a natural number (int).
+q1 = latin_hypercube_sampling(LOW,UP,p,d)
+q1[:,0]=q1[:,0].astype(int)
+q2 = 1-q1[:,4]
+q = np.concatenate((q1,q2), axis=1)                          #Always keep the first input as NT (number of trays), as it must be a natural number (int).
 #q[:,1:]=np.around(q[:,1:],4)                         # We want the other variables to have 4 decimals, as this is the length in HYSYS variables.
 #q=np.around(q,4)                                     # We want all the other variables to have 4 decimals, as this is the length in HYSYS variables.
 #%% Plot the sampling points to check everything is random
