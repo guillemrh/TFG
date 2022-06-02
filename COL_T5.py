@@ -175,7 +175,7 @@ p = latin_hypercube_normalized(d,n)
 q1 = latin_hypercube_sampling(LOW,UP,p,d)
 q1[:,0]=q1[:,0].astype(int)
 q2 = 1-q1[:,4]
-q = np.concatenate((q1,q2), axis=1)                          #Always keep the first input as NT (number of trays), as it must be a natural number (int).
+q = np.insert(q1, 5, q2, axis=1)                          #Always keep the first input as NT (number of trays), as it must be a natural number (int).
 #q[:,1:]=np.around(q[:,1:],4)                         # We want the other variables to have 4 decimals, as this is the length in HYSYS variables.
 #q=np.around(q,4)                                     # We want all the other variables to have 4 decimals, as this is the length in HYSYS variables.
 #%% Plot the sampling points to check everything is random
