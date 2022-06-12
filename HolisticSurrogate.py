@@ -64,16 +64,16 @@ epochs = 35
 batch_size = 300
 k=0
 
-for count, num_units in enumerate(hid_units):
+for count, num_units in enumerate(hid_units): #Generate X models (as many as hidden units permutions, per hidden layers)
     if k <len(hid_units):
-      features = layers.Dense(hid_units[k], activation="relu", name='first_hidden_layer')(inputs)
-      features = layers.Dense(hid_units[k+1], activation="relu", name='second_hidden_layer')(features)
+      features = layers.Dense(hid_units[k], activation="relu", name='first_hidden_layer')(inputs) #First hidden layer
+      features = layers.Dense(hid_units[k+1], activation="relu", name='second_hidden_layer')(features) #Second hidden layer
       
-      outputs = layers.Dense(len(y_train.columns), activation="linear", name="Output_layer")(features)
+      outputs = layers.Dense(len(y_train.columns), activation="linear", name="Output_layer")(features) #Output layer
 
       model_i = "Model {0}".format(count+1) #Model names
       mymodels[model_i] = keras.Model(inputs=inputs, outputs=outputs) # Save the i model
-      #mymodels["model{0}".format(count)].summary()
+      #mymodels["model{0}".format(count)].summary() --> print a summary
       mymodels[model_i].compile(loss='mean_squared_error', optimizer='adam', metrics=["mae", 'mse'])  # Compile the i model
       print('')
       print(model_i)
@@ -87,14 +87,15 @@ for count, num_units in enumerate(hid_units):
       preds_i = "preds{0}".format(count) #Preds names
       preds[preds_i] = mymodels[model_i].predict(x_test) #Predict the i model
       print('')
-      for col in range(0,len(y_test.columns)):
+
+      for col in range(0,len(y_test.columns)): #Evaluate each output variable for the i model using mse and store it into a dictionary 
         mse_i = "mse_{0}".format(col+1)
         mse_value1 = mean_squared_error(y_test.iloc[:,col], preds[preds_i][:,col])
         list_dicts_mse[count][mse_i] = mse_value1
       print('')
       k +=2
 
-      #Plot the training vs validation set for the i model
+      #Plot the training vs validation loss for the i model
       fig, (ax1) = plt.subplots(nrows=1, ncols=1, figsize = (15, 8))
       ax1.plot(History[History_i].history['loss'])
       ax1.plot(History[History_i].history['val_loss'])
@@ -105,3 +106,6 @@ for count, num_units in enumerate(hid_units):
       ax1.legend(['Train', 'Validation'], loc='upper right', fontsize=20)
       ax1.tick_params(axis='both',labelsize=15)
       print('')
+
+df_mse = pd.DataFrame.from_records(list_dicts_mse) #Store the mse values for each output of the i model into a dataframe
+df_mse_trans = df_mse.T
