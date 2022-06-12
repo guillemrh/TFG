@@ -2,13 +2,13 @@
 
 ## Abstract 
 
-One of the main problems when simulating chemical processes is the large computational load and the high execution time required due to the complexity of these systems. This fact has given rise to new models, called surrogate models, that can simplify the same task, reducing time and computational load. In the present work, a methodology will be developed to apply substitution methods using autonomous learning algorithms, known as artificial neural networks. Two alternatives will be studied to develop surrogate models, which will be evaluated according to time and accuracy. In the first one, the process will be treated as a holistic, so that a single surrogate model representing the whole process will be developed. In the second, the process will be treated by modules (sequentially), so that as many surrogate models will be developed as there are modules in the process. In this second alternative, the surrogate models will be connected sequentially, so that some of the output variables predicted by one model will be used as input variables for the next model. Since I did not have enough data of a chemical process to train the surrogate models, a polyethylene pyrolysis process will be simulated with Aspen HYSYS.
+One of the main problems when simulating chemical processes is the large computational load and the high execution time required due to the complexity of these systems. This fact has given rise to new models, called surrogate models, that can simplify the same task, reducing time and computational load. In the present work, a methodology is developed to build surrogate models using machine learning algorithms, such as artificial neural networks. Two alternatives are studied to develop surrogate models, which are evaluated according to time and accuracy. In the first one, the process is treated as a holistic system, so that a single surrogate model is developed for the whole process. In the second one, the process is treated by modules (sequentially), a surrogate model is developed for every module in the process. In this second alternative, the surrogate models are connected sequentially, so that some of the output variables predicted by one model are used as input variables for the next model. Since I did not have enough data of a chemical process to train the surrogate models, a polyethylene pyrolysis process is simulated with Aspen HYSYS.
 
 ## Files
 
 ## Datasets
 
-"T4_T5.xlsx": Result of sampling distillation columns T4 and T5 (from PE2.hsc, in HYSYS simulations folder) as a holistic. Contains 10000 sampling points, with both input (NT, RR, D_Flow for each column) and output variables.
+"T4_T5.xlsx": Result of sampling distillation columns T4 and T5 (from PE2.hsc, in HYSYS simulations folder) as a holistic system. Contains 10000 sampling points, with both input (NT, RR, D_Flow for each column) and output variables.
 
 "Book1.xlsx": Empty .xlsx file, used to store the data generated using the Python scripts.
 
@@ -34,5 +34,5 @@ One of the main problems when simulating chemical processes is the large computa
 
 "PE.hsc" : Complete simulation process for a waste polyethylene pyrolysis, ready to be connected with Python to generate data from distillation column T5.
 
-"PE.hsc" : Same as PE.hsc, but it is ready to generate data from distillation columns T4 and T5 as a holistic.
+"PE.hsc" : Same as PE.hsc, but it is ready to generate data from distillation columns T4 and T5 as a holistic system.
 
