@@ -6,7 +6,7 @@ One of the main problems when simulating chemical processes is the large computa
 
 ## Files
 
-## Datasets:
+## Datasets
 
 "T4_T5.xlsx": Result of sampling distillation columns T4 and T5 (from PE2.hsc, in HYSYS simulations folder) as a holistic. Contains 10000 sampling points, with both input (NT, RR, D_Flow for each column) and output variables.
 
