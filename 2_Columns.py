@@ -205,8 +205,8 @@ q2= sorted(sorted(sorted(q2,key=lambda x: x[1]),key=lambda x: -x[2]),key=lambda 
 #%% Sample the data points
 q = np.concatenate((q1, q2), axis=1)
 
-filepath   =r'C:\Users\vdi.eebe\Desktop\TFG-main\PE2.hsc'  # Ubicació de la simulació a mapejar
-Hysyspath =r'C:\Program Files\AspenTech\Aspen HYSYS V12.0\hysys.tlb'  # Ubicació de la instal·lació de HYSYS 
+filepath   =r'C:\Users\vdi.eebe\Desktop\TFG-main\PE2.hsc'  # HYSYS simulation
+Hysyspath =r'C:\Program Files\AspenTech\Aspen HYSYS V12.0\hysys.tlb'  #  HYSYS program file location
 
 obj = HysysConnection(filepath,Hysyspath)
 obj.OpenCase()
