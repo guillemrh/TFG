@@ -1,4 +1,4 @@
-# TFG
+# End of degree project.
 
 ## Abstract 
 
