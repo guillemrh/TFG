@@ -13,7 +13,7 @@ import itertools
 sns.set_theme()
 
 #%%Preprocessing/cleaning
-df = pd.read_excel('/content/drive/MyDrive/TFG/DADES/T4_T5.xlsx') #Read excel file
+df = pd.read_excel('T4_T5.xlsx') #Read excel file
 
 pd.set_option('display.max_columns', None) #Display all columns
 df.head() 
