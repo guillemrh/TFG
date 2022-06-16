@@ -22,6 +22,12 @@ In this paper, a methodology will be developed to apply surrogate models using m
 
 "X_Columns.py" : Same as 2_Column.py, but can generate data from multiple (X) distillation columns (sequentially).
 
+"HolisticSurrogate.py": Uses the "T4_T5.xlsx" dataset, pretreats the data (data cleaning and normalization) and builds several ANN models (to study the number of hidden units for each hidden layer). The results are plotted and the metrics to evaluate the model are stored into a dataframe.
+
+"T4ModularSurrogate.py": Uses the "T4_T5.xlsx" dataset, pretreats the data (data cleaning and normalization) and builds an ANN. The results are plotted and the metrics to evaluate the model are stored into a dataframe. The outputs that must be used for T5ModularSurrogate.py are stored into a dataframe.
+
+"T5ModularSurrogate.py": Uses the "T4_T5.xlsx" dataset and some inputs from the previous module (T4ModularSurrogate.py), pretreats the data (data cleaning and normalization) and builds an ANN. The results are plotted and the metrics to evaluate the model are stored into a dataframe.
+
 ## Folders
 
 ## HYSYS scripts
