@@ -48,7 +48,7 @@ for q in range(len(neur_comb)): #Create a list with all the permutations
     hid_units.append(neur_comb[q][0])
     hid_units.append(neur_comb[q][1])
 
-inputs = keras.Input(shape=(len(x_train.columns)), name='Input layer') #Define the input unit
+inputs = keras.Input(shape=(len(x_train.columns)), name='Input layer') #Define the input layer
 
 mymodels = {}
 History = {}
